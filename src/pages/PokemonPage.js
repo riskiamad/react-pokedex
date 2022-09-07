@@ -1,15 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Card, Row, Col } from 'react-bootstrap';
-import { Link } from 'react-router-dom';
+import { Card, Row, Col, Button } from 'react-bootstrap';
+import { Link, Redirect } from 'react-router-dom';
 
 // Components
 import Loader from '../components/Loader';
+import AddPokemonModal from '../components/AddPokemonModal';
+import ReleaseModal from '../components/ReleaseModal';
 
 const PokemonPage = ({ match }) => {
 
     const [pokemonDetails, setPokemonDetails] = useState();
     const [loading, setLoading] = useState(true);
+    const [showModal, setShowModal] = useState(false);
 
     const id = match.params.id;
 
@@ -23,6 +26,18 @@ const PokemonPage = ({ match }) => {
     const getPokemonData = async (id) => {
         const res = await axios.get(`https://pokeapi.co/api/v2/pokemon/${id}`);
         return res;
+    }
+
+    const catchPokemon = async (id) => {
+        const res = await axios.get(`http://localhost:8081/api/v1/pokemon/${id}/catch`);
+        console.log(res.data['data'].is_caught);
+        if (res.data['data'].is_caught) {
+            setShowModal(true);
+            return <><AddPokemonModal id={id} show={showModal} /><Redirect to="/" /></>
+        } else {
+            setShowModal(true);
+            return <ReleaseModal message="failed to catch pokemon" show={showModal}/>
+        }
     }
 
     useEffect(() => {
@@ -41,6 +56,7 @@ const PokemonPage = ({ match }) => {
                                 <Card.Img style={{ width: '15rem' }} src={pokemonDetails.sprites.front_default} variant='top'/>
                             </Link>
                             <Card.Body className={`${pokemonDetails.types[0].type.name} rounded text-white`}>
+                                <Button size='sm' className='my-2' onClick={ () => catchPokemon(id)}>Catch</Button>
                                 <Link to={`/pokemon/${pokemonDetails.name}`} className='link-name'>
                                     <Card.Title as='div'>
                                         <strong>#{pokemonDetails.id} {pokemonDetails.name.charAt(0).toUpperCase() + pokemonDetails.name.slice(1)}</strong>
