@@ -8,7 +8,10 @@ const Header = () => {
             <Navbar bg="dark" variant='dark' expand="lg" collapseOnSelect>
                 <Container>
                     <LinkContainer to="/">
-                        <Navbar.Brand>React Pokédex</Navbar.Brand>
+                        <Navbar.Brand>Pokedex</Navbar.Brand>
+                    </LinkContainer>
+                    <LinkContainer to="/mypokemon">
+                        <Navbar.Brand>My Pokemon</Navbar.Brand>
                     </LinkContainer>
                 </Container>
             </Navbar>
