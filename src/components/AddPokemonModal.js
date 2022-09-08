@@ -5,27 +5,24 @@ import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
 import { Redirect } from 'react-router-dom';
 
-function AddPokemonModal(id) {
-  const [show, setShow] = useState(false);
+const AddPokemonModal = ({ showModal, id, handle }) => {
+
   const [value, setValue] = useState()
 
-  const handleClose = () => setShow(false);
 
   const onInput = ({target:{value}}) => setValue(value)
 
   const addPokemon = async (id) => {
+    const convId = parseInt(id, 10);
     const opt = {
       headers: {'Content-Type': 'application/json'}
     };
-    const res = await axios.post(`http://localhost:8081/api/v1/user/pokemon`, {'name': value, 'pokemon_id': id}, opt);
-    const url = `/mypokemon/${res.data.id}`;
-    handleClose();
-    <Redirect to={url} />
+    await axios.post(`http://localhost:8081/api/v1/user/pokemon`, {'name': value, 'pokemon_id': convId}, opt);
   }
  
   return (
     <>
-      <Modal show={show} onHide={handleClose}>
+      <Modal show={showModal} onHide={handle}>
         <Modal.Header closeButton>
           <Modal.Title>Gotcha, give your pokemon a name</Modal.Title>
         </Modal.Header>
@@ -43,13 +40,13 @@ function AddPokemonModal(id) {
           </Form>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="primary" onClick={handleClose} type='submit' onSubmit={ () => addPokemon(id)}>
+          <Button variant="primary" onClick={ () => addPokemon(id)} type='submit' onSubmit={ () => addPokemon(id)}>
             Submit
           </Button>
         </Modal.Footer>
       </Modal>
     </>
   );
-}
+};
 
 export default AddPokemonModal;

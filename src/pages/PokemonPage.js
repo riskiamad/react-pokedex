@@ -13,6 +13,9 @@ const PokemonPage = ({ match }) => {
     const [pokemonDetails, setPokemonDetails] = useState();
     const [loading, setLoading] = useState(true);
     const [showModal, setShowModal] = useState(false);
+    const handleClose = () => setShowModal(false);
+    const [released, setReleased] = useState();
+
 
     const id = match.params.id;
 
@@ -28,15 +31,15 @@ const PokemonPage = ({ match }) => {
         return res;
     }
 
-    const catchPokemon = async (id) => {
-        const res = await axios.get(`http://localhost:8081/api/v1/pokemon/${id}/catch`);
+    const catchPokemon = async (pokeId) => {
+        const res = await axios.get(`http://localhost:8081/api/v1/pokemon/${pokeId}/catch`);
         console.log(res.data['data'].is_caught);
         if (res.data['data'].is_caught) {
+            setReleased(true);
             setShowModal(true);
-            return <><AddPokemonModal id={id} show={showModal} /><Redirect to="/" /></>
         } else {
+            setReleased(false);
             setShowModal(true);
-            return <ReleaseModal message="failed to catch pokemon" show={showModal}/>
         }
     }
 
@@ -56,7 +59,7 @@ const PokemonPage = ({ match }) => {
                                 <Card.Img style={{ width: '15rem' }} src={pokemonDetails.sprites.front_default} variant='top'/>
                             </Link>
                             <Card.Body className={`${pokemonDetails.types[0].type.name} rounded text-white`}>
-                                <Button size='sm' className='my-2' onClick={ () => catchPokemon(id)}>Catch</Button>
+                                <Button size='sm' className='my-2' onClick={ () => catchPokemon(pokemonDetails.id)}>Catch</Button>
                                 <Link to={`/pokemon/${pokemonDetails.name}`} className='link-name'>
                                     <Card.Title as='div'>
                                         <strong>#{pokemonDetails.id} {pokemonDetails.name.charAt(0).toUpperCase() + pokemonDetails.name.slice(1)}</strong>
@@ -107,6 +110,11 @@ const PokemonPage = ({ match }) => {
                         </Card>
                     </Col>
                 </Row>
+            )}
+            { released? (
+                <AddPokemonModal id={pokemonDetails.id} showModal={showModal} handle={handleClose} /> )
+                : (
+                <ReleaseModal message="failed to catch pokemon" showModal={showModal} handle={handleClose}/>
             )}
         </>
     )

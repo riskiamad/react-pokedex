@@ -12,6 +12,8 @@ const DetailMyPokemonPage = ({ match }) => {
     const [pokemonDetails, setPokemonDetails] = useState();
     const [loading, setLoading] = useState(true);
     const [showModal, setShowModal] = useState(false);
+    const handleClose = () => setShowModal(false);
+    const [msg, setMessage] = useState();
 
     const id = match.params.id;
 
@@ -38,11 +40,11 @@ const DetailMyPokemonPage = ({ match }) => {
         const res = await axios.delete(`http://localhost:8081/api/v1/user/pokemon/${id}/release`);
         console.log(res.data['data'].is_released);
         if (res.data['data'].is_released) {
+            setMessage("pokemon has released");
             setShowModal(true);
-            return <><ReleaseModal message='your pokemon has released' show={showModal} /><Redirect to="/mypokemon" /></>
         } else {
+            setMessage("Pokemon doesn't want to released");
             setShowModal(true);
-            return <ReleaseModal message="your pokemon doesn't want to release" show={showModal}/>
         }
     }
 
@@ -118,6 +120,7 @@ const DetailMyPokemonPage = ({ match }) => {
                     </Col>
                 </Row>
             )}
+            <ReleaseModal message={msg} showModal={showModal} handle={handleClose}/>
         </>
     )
 }
